@@ -1,0 +1,3 @@
+#sbatch ejecutaBashPySpark.sh
+
+#squeue

@@ -1,0 +1,4 @@
+{
+  "archivoReferencia": "../Data/input1.fasta",
+  "archivoSecuencia":  "../Data/input2.fasta",
+  "particiones": 100}
