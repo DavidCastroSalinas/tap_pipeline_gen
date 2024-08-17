@@ -10,7 +10,7 @@ shell:
     '''
     #!/usr/bin/bash
     cd !{params.path}
-    bash ./Scripts/configuracionInicial.sh    
+    #bash ./Scripts/configuracionInicial.sh    
     '''
 
 output:
@@ -32,7 +32,7 @@ output:
     stdout       
 }
 
-process calculoBashTask {
+process calculoBashTask2 {
 input:
     stdin
     
@@ -48,10 +48,75 @@ output:
 
 
 
+process calculoSPARKTask {
+input:
+    stdin
+    
+shell:
+    '''
+    cd !{params.path}/Scripts
+    python 01_LOAD_CODE_SPARK.py
+    '''
+
+output:
+    stdout
+
+}
+
+process calculoSQLTask {
+input:
+    stdin
+    
+shell:
+    '''
+    cd !{params.path}/Scripts
+    python 02_LOAD_CODE_SQL.py
+    '''
+
+output:
+    stdout
+
+}
+
+
+
+process calculoBashTask {
+input:
+    stdin
+    
+shell:
+    '''
+    cd !{params.path}/Scripts
+    python 03_LOAD_BASH.py
+    '''
+
+output:
+    stdout
+
+}
+
+
+process generaReporteTask {
+input:
+    stdin
+    
+shell:
+    '''
+    cd !{params.path}/Scripts
+     R -e "rmarkdown::render('reporte_utf8.Rmd')"
+     mv reporte_utf8.pdf ../Results/reporte_$(date +'%d%m%Y_%H%M').pdf 
+    '''
+
+output:
+    stdout
+
+}
+
+
 /*
  * A trivial Perl script that produces a list of number pairs
  */
-process calculoPySparkTask {
+process calculoPySparkTask_Eliminiar {
 input:
     stdin
     
@@ -101,5 +166,5 @@ process generacionGraficospyTask {
 }
 
 workflow {
-    configuracionInicialTask | descargaDataTask | calculoBashTask | calculoPySparkTask | generacionGraficospyTask | view
+    configuracionInicialTask | descargaDataTask | calculoBashTask | calculoSQLTask | generaReporteTask | view
 }
