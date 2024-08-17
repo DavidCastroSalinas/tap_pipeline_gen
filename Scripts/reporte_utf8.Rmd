@@ -1,0 +1,23 @@
+---
+title: "Reporte Proceso Pipeline"
+author: "David A. Castro S."
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+## Contenidos
+
+En este reporte se presenta la comparación de métodos de procesamiento **PySpark-SQL** vs **Bash** .
+
+## Análisis de datos
+
+```{r}
+# Código R que deseas ejecutar
+summary(cars)
+plot(cars)
+
+
+plot(mtcars$mpg, mtcars$hp,
+     main = "Relación entre MPG y HP",
+     xlab = "Millas por galón (MPG)",
+     ylab = "Caballos de fuerza (HP)")

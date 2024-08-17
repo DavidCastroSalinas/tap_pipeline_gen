@@ -1,0 +1,23 @@
+---
+title: "Mi Reporte"
+author: "Tu Nombre"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Introducción
+
+Aquí puedes escribir texto en **Markdown**.
+
+## Análisis de datos
+
+```{r}
+# Código R que deseas ejecutar
+summary(cars)
+plot(cars)
+
+
+plot(mtcars$mpg, mtcars$hp,
+     main = "Relación entre MPG y HP",
+     xlab = "Millas por galón (MPG)",
+     ylab = "Caballos de fuerza (HP)")
