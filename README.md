@@ -1,4 +1,4 @@
-# Proyecto de Análisis de Secuencias Genómicas
+![Imagen de WhatsApp 2024-08-19 a las 11 10 17_5d8c5c1f](https://github.com/user-attachments/assets/04feb124-6b7c-421b-87d9-b4796368ff10)# Proyecto de Análisis de Secuencias Genómicas
 
 ## Descripción del Proyecto
 
@@ -22,26 +22,42 @@ Las investigaciones biomédicas modernas se nutren fuertemente de herramientas c
     ```
 
 2. **Preparar el entorno**:
+   Asegúrate de que Conda esté instalado en tu sistema.
+   Genera un nuevo entorno Conda (proponemos el nombre de tap):   
+    ```bash
+       conda create -n tap python=3.7 
+    ```
+    Luego activa el entorno:
+    ```bash
+       conda activate tab 
+    ```
+   Instala pySpark: 
+   
    Asegúrate de que R esté instalado en tu sistema. Puedes instalar los paquetes necesarios ejecutando el siguiente comando en la consola de R:
-    ```r
-    install.packages("ggplot2")
+    ```bash
+    sudo apt -y install r-base
+    sudo apt install pandoc
+    sudo apt install texlive-latex-extra 
+    sudo apt install texlive-lang-all
     ```
 
-3. **Ejecutar el script de análisis**:
+4. **Ejecutar el script de análisis**:
    Navega al directorio donde se encuentra el archivo mail.nf. Luego, ejecuta el script con:
     ```bash    
     nextflow main.nf
     ```
 
-4. **Interpretación de los Resultados**:
+5. **Interpretación de los Resultados**:
    - El script generará gráficos de dispersión en formato PNG que muestran la relación entre diferentes variables del set de datos.
    - Los archivos PNG se guardarán en el mismo directorio /Results.
 
 ### Estructura de Archivos
 
-- `script_grafico.R`: Script en R que realiza el análisis y genera los gráficos.
+- `main.f`: Script de netflow que contiene la procesos que serán ejecutados en el pipeline.
+- `Scripts/`: Directorio donde se almacenan los scripts que son parte del pipeline.
 - `Data/`: Directorio que contiene los archivos CSV con los datos de entrada.
-- `Results/`: Directorio donde se almacenan los gráficos generados.
+- `Results/`: Directorio donde se almacenan los archivos csv generados.
+- `Reports/`: Directorio donde se almacenan los archivos PDF generados.
 
 ## Autor
 
