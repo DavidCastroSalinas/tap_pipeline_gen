@@ -167,7 +167,7 @@ input:
 shell:
     '''
     cd "!{params.path_scripts}"
-    bash "!{params.path_scripts}/04_DESCRIPTION_BASH.sh" "!{params.path_data}/!{params.file_secuencia}" "!{params.path_results}/04_DATA_!{params.proceso}.csv"  "!{params.path_results}/04_RESUM_!{params.proceso}.csv"  
+    bash "!{params.path_scripts}/04_DESCRIPTION_BASH.sh" "!{params.path_data}/!{params.file_secuencia}" "!{params.path_results}/!{params.proceso}_04_data.csv"  "!{params.path_results}/!{params.proceso}_04_data_resum.csv"  
     
     '''
     

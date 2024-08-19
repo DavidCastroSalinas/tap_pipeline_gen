@@ -11,31 +11,74 @@ params:
 
 En este reporte se presentan los datos obtenidos de la comparación del procesamiento realizado por los métodos **PySpark-SQL** vs **Bash** para archivos con cadenas de secuencias y referencias de ADN.
 
-## Análisis de datos archivo de Referencia
-
 ```{r echo=FALSE}
 if(!require(readr)) install.packages("readr")
 library(readr)
 
 param_value<-params$id_proceso
-cat(paste("El valor del parámetro es:", param_value))
 
 
-archivo<-paste0("../Results/", params$id_proceso, "_02_data.csv")
-mi_data <- read.csv(archivo)
+archivo<-paste0("../Results/", params$id_proceso, "_04_data.csv")
+data <- read.csv(archivo, header=TRUE)
 
-# Mostrar los primeros 6 registros
-head(mi_data)
+plot(data$LONGITUD, data$CANTIDAD_CG,
+     main="Relación entre Longitud y Cantidad de CG",
+     xlab="Longitud",
+     ylab="Cantidad de CG",
+     pch=19, # Tipo de punto
+     col="blue") # Color de los puntos
 
-# Mostrar un resumen de los datos
-summary(mi_data)
+png("grafico_dispersión_longitud_cg.png")
+plot(data$LONGITUD, data$CANTIDAD_CG,
+     main="Relación entre Longitud y Cantidad de CG",
+     xlab="Longitud",
+     ylab="Cantidad de CG",
+     pch=19,
+     col="blue")
+dev.off()
+summary(data)
 
 
-archivo<-paste0("../Results/", params$id_proceso, "_03_data.csv")
-mi_data <- read.csv(archivo)
+archivo2<-paste0("../Results/", params$id_proceso, "_02_data.csv")
+data <- read.csv(archivo2, header=TRUE)
 
-# Mostrar los primeros 6 registros
-head(mi_data)
+# Crear un gráfico de dispersión
+plot(data$TAMANO, data$POSICION,
+     main="Relación entre Tamaño y Posición",
+     xlab="Tamaño",
+     ylab="Posición",
+     pch=19, # Tipo de punto
+     col="red") # Color de los puntos
 
-# Mostrar un resumen de los datos
-summary(mi_data)
+png("grafico_dispersión_tamaño_posicion.png")
+plot(data$TAMANO, data$POSICION,
+     main="Relación entre Tamaño y Posición",
+     xlab="Tamaño",
+     ylab="Posición",
+     pch=19,
+     col="red")
+dev.off()
+summary(data)
+
+
+
+archivo3<-paste0("../Results/", params$id_proceso, "_03_data.csv")
+data <- read.csv(archivo3, header=TRUE)
+
+plot(data$LONGITUD, data$TIEMPO,
+     main="Relación entre Longitud y Tiempo",
+     xlab="Longitud",
+     ylab="Tiempo",
+     pch=19, # Tipo de punto
+     col="green") # Color de los puntos
+
+png("grafico_dispersión_longitud_tiempo.png")
+plot(data$LONGITUD, data$TIEMPO,
+     main="Relación entre Longitud y Tiempo",
+     xlab="Longitud",
+     ylab="Tiempo",
+     pch=19,
+     col="green")
+dev.off()
+summary(data)
+
