@@ -10,6 +10,8 @@ Las investigaciones biomédicas modernas se nutren fuertemente de herramientas c
 
 ### Requisitos Previos
 
+- [Java](https://www.java.org/) versión 21 o superior
+- [Python](https://www.python.org/) versión 3.12.4 o superior
 - [R](https://www.r-project.org/) versión 3.6 o superior
 - Paquetes de R necesarios: `ggplot2` (opcional si se desean gráficos más avanzados)
 
