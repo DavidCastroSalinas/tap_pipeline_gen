@@ -1,4 +1,4 @@
-![Imagen de WhatsApp 2024-08-19 a las 11 10 17_5d8c5c1f](https://github.com/user-attachments/assets/04feb124-6b7c-421b-87d9-b4796368ff10)# Proyecto de Análisis de Secuencias Genómicas
+# Proyecto de Análisis de Secuencias Genómicas
 
 ## Descripción del Proyecto
 
