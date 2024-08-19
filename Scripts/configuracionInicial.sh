@@ -1,4 +1,4 @@
-
+#Proceso de creación carpeta
 dirdest="./Data/"
 if [ ! -d $dirdest ]
 then
@@ -15,3 +15,12 @@ if [ ! -d $dirdest ]
 then
   mkdir $dirdest
 fi
+
+
+dirdest="./Reports/"
+if [ ! -d $dirdest ]
+then
+  mkdir $dirdest
+fi
+
+

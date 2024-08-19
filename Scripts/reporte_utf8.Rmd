@@ -1,23 +1,41 @@
 ---
-title: "Reporte Proceso Pipeline"
+title: "Reporte Proceso Pipeline `r params$id_proceso`"
 author: "David A. Castro S."
 date: "`r Sys.Date()`"
 output: pdf_document
+params: 
+  id_proceso: "No_definido"
 ---
 
 ## Contenidos
 
-En este reporte se presenta la comparación de métodos de procesamiento **PySpark-SQL** vs **Bash** .
+En este reporte se presentan los datos obtenidos de la comparación del procesamiento realizado por los métodos **PySpark-SQL** vs **Bash** para archivos con cadenas de secuencias y referencias de ADN.
 
-## Análisis de datos
+## Análisis de datos archivo de Referencia
 
-```{r}
-# Código R que deseas ejecutar
-summary(cars)
-plot(cars)
+```{r echo=FALSE}
+if(!require(readr)) install.packages("readr")
+library(readr)
+
+param_value<-params$id_proceso
+cat(paste("El valor del parámetro es:", param_value))
 
 
-plot(mtcars$mpg, mtcars$hp,
-     main = "Relación entre MPG y HP",
-     xlab = "Millas por galón (MPG)",
-     ylab = "Caballos de fuerza (HP)")
+archivo<-paste0("../Results/", params$id_proceso, "_02_data.csv")
+mi_data <- read.csv(archivo)
+
+# Mostrar los primeros 6 registros
+head(mi_data)
+
+# Mostrar un resumen de los datos
+summary(mi_data)
+
+
+archivo<-paste0("../Results/", params$id_proceso, "_03_data.csv")
+mi_data <- read.csv(archivo)
+
+# Mostrar los primeros 6 registros
+head(mi_data)
+
+# Mostrar un resumen de los datos
+summary(mi_data)

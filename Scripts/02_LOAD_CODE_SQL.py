@@ -6,9 +6,11 @@
 # version ='1.0'
 # ---------------------------------------------------------------------------
 
+
 #####PARAMETROS
 from datetime import datetime
 import time
+import os
 
 ####PARAMETRIZAMOS EL SISTEMA
 import json
@@ -16,12 +18,13 @@ def leer_parametros(ruta_archivo):
     with open(ruta_archivo) as archivo:
         parametros = json.load(archivo)
     return parametros
+#enddef
 
-parametros = leer_parametros("config.json")    
+parametros = leer_parametros("/home/dabits/proyectos/tap_pipeline_gen/Scripts/config.json")    
     
 archivoReferencia = parametros.get("archivoReferencia")
 archivoSecuencia = parametros.get("archivoSecuencia")
-particiones = parametros.get("particiones")    
+particiones = 1 #parametros.get("particiones")    
 ####PARAMETRIZAMOS EL SISTEMA  
 
 
@@ -85,6 +88,9 @@ def leerArchivoSecuencia(nombreArchivo):
 
 #############CARGA DE DATOS
 df = leerArchivoALinea(archivoReferencia)
+print(df.count())
+df.show(10)
+
 
 
 ##CODIGO COPIADO
@@ -126,34 +132,52 @@ dfSecuencia = spark.createDataFrame(parsed_fasta, ["Header", "Sequence"])
 # Create temporary table 
 df.createOrReplaceTempView("referencia_table")
 dfSecuencia.createOrReplaceTempView("secuencia_table")
+dfSecuencia.show(10)
 
 # PROCESAMIENTO VIA SQL DOS CAMPOS DESDE LAS FILAS
 # SE ASUME QUE LOS DATOS SON 1 a 1
 df_seq = spark.sql(
-    "SELECT s.Header nombre, SUBSTRING(s.Header, INSTR(s.Header, '=') + 1) AS id_reads," 
+    "SELECT s.Header nombre, SUBSTRING(s.Header, INSTR(s.Header, ' ') + 1) AS id_reads," 
     " s.Sequence glosa, length(s.Sequence) tamano FROM secuencia_table s")
 
 
 # CREAMOS EL MASTER PARA OPERAR EN SQL
 df_seq.createOrReplaceTempView("sencuencia_master_table")
-
+df_seq.show(10)
 
 # COMPLEMENTAMOS EL MASTER CON LOS QUE SON ENCONTRADOS, Y OBTENEMOS LA POSICIÓN
 df_resultado = spark.sql(
-    "SELECT s.id_reads READ, s.tamano TAMANO, INSTR(r.referencia , s.glosa) AS POSICION "
+    "SELECT s.id_reads READ, s.tamano TAMANO, INSTR(r.referencia , substring(s.glosa,0,10)) AS POSICION "
     "   FROM sencuencia_master_table s, referencia_table r "
-    "       WHERE r.referencia like CONCAT('%', s.glosa, '%') ")
+    "       WHERE r.referencia like CONCAT('%', substring(s.glosa,0,10), '%') ")    
 
-df_resultado = df_resultado.repartition(num_particiones)
+#df_resultado = spark.sql(
+#    "SELECT s.id_reads READ, s.tamano TAMANO, INSTR(r.referencia , s.glosa) AS POSICION "
+#    "   FROM sencuencia_master_table s, referencia_table r "
+#    "       WHERE r.referencia like CONCAT('%', s.glosa, '%') ")
+
+
+df_pd  = df_resultado.toPandas()
+df_pd.to_csv('02_data.csv', index=False)
+
 
 # GENERAMOS UN ARCHIVO CSV CON LOS DATOS
 if df_resultado is not None:
     #df_resultado.printSchema()
     #df_resultado.show()
-    df_resultado.coalesce(1).write.option("header", True).option("delimiter", "\t").csv(archivoSalidaCSV)
+    #df_resultado.coalesce(1).write.option("header", True).option("delimiter", "\t").csv(archivoSalidaCSV)
+    #df.write.csv(archivoSalidaCSV, header=True)
+    
     print("csv")
 else: 
     print("Error no se pudo crear el archivo CSV")
+
+df_resultado = df_resultado.repartition(num_particiones)
+
+df_resultado.count()
+print(df_resultado.count())
+df_resultado.show(10)
+
 
 # GENERAMOS UN ARCHIVO JSON CON LOS DATOS
 if df_resultado is not None:

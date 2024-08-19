@@ -1,4 +1,8 @@
 {
   "archivoReferencia": "../Data/input1.fasta",
   "archivoSecuencia":  "../Data/input2.fasta",
-  "particiones": 100}
+  "archivoReferencia_preprocesado": "../Data/input1.fasta_preprocesado",  
+  "archivoSecuencia_preprocesado":  "../Data/input2.fasta_preprocesado",
+  "particiones": 100,
+  "cantidadCaracteres": 10  
+  }

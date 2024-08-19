@@ -2,15 +2,19 @@
 
 params.range = 100
 params.path = "/home/dabits/proyectos/tap_pipeline_gen"
-params.proceso = 1
+params.path_scripts =  params.path + "/Scripts" 
+params.path_results =  params.path + "/Results"
+params.path_reports =  params.path + "/Reports"
+params.path_data =     params.path + "/Data"
+
+params.proceso = "date +%Y%m%d_%H%M%S".execute().text.trim()
 
 process configuracionInicialTask {
     
 shell:
     '''
     #!/usr/bin/bash
-    cd !{params.path}
-    #bash ./Scripts/configuracionInicial.sh    
+    bash !{params.path_scripts}/configuracionInicial.sh    
     '''
 
 output:
@@ -24,28 +28,68 @@ input:
 shell:
     '''
     #!/usr/bin/bash
-    cd !{params.path}
-    bash ./Scripts/descargaData.sh    
+    bash !{params.path_scripts}/descargaData.sh    
     '''
     
 output:
     stdout       
 }
 
-process calculoBashTask2 {
+
+process limpiezaDatosTask {
 input:
     stdin
     
 shell:
     '''
     #!/usr/bin/bash
-    echo "calculando"
+    cd !{params.path}
+    cd Data
+
+    archivoP1="input1.fasta_preprocesado"    
+    if [ -f "$archivoP1" ]; then
+      rm "$archivoP1"
+      echo "Archivo eliminado: $archivoP1"
+    else
+      echo "El archivo no existe: $archivoP1"
+    fi
+    
+    archivoP2="input2.fasta_preprocesado"    
+    if [ -f "$archivoP2" ]; then
+      rm "$archivoP2"
+      echo "Archivo eliminado: $archivoP2"
+    else
+      echo "El archivo no existe: $archivoP2"
+    fi
+    
+    
+    cd !{params.path}
+    cd Data
+    
+    archivoF1="input1.fasta"    
+    if [ -f "$archivoF1" ]; then
+      bash ../Scripts/procesarLineas.sh $archivoF1  $archivoP1
+      echo "Archivo procesado: $archivoF1"
+    else
+      echo "El archivo no existe: $archivoF1"
+    fi
+
+    cd !{params.path}
+    cd Data
+
+    
+    archivoF2="input2.fasta"    
+    if [ -f "$archivoF2" ]; then
+      bash ../Scripts/procesarLineas.sh $archivoF2  $archivoP2
+      echo "Archivo procesado: $archivoF2"
+    else
+      echo "El archivo no existe: $archivoF2"
+    fi
+    
     '''
 output:
     stdout    
 }
-
-
 
 
 process calculoSPARKTask {
@@ -54,8 +98,7 @@ input:
     
 shell:
     '''
-    cd !{params.path}/Scripts
-    python 01_LOAD_CODE_SPARK.py
+    python !{params.path_scripts}/01_LOAD_CODE_SPARK.py
     '''
 
 output:
@@ -63,20 +106,29 @@ output:
 
 }
 
-process calculoSQLTask {
+process calculoPyStackSQLTask {
 input:
     stdin
     
 shell:
     '''
-    cd !{params.path}/Scripts
-    python 02_LOAD_CODE_SQL.py
+    cd "!{params.path_scripts}"
+    python !{params.path_scripts}/02_LOAD_CODE_SQL.py "!{params.path_scripts}"
+    
+    archivo="!{params.path_scripts}/02_data.csv"
+    if [ -f "$archivo" ]; then      
+      mv "$archivo" "!{params.path_results}/!{params.proceso}_02_data.csv"
+      echo "Archivo movido: $archivo"
+    else
+      echo "El archivo no existe: $archivo"
+    fi
+    
     '''
-
 output:
     stdout
 
 }
+
 
 
 
@@ -86,14 +138,24 @@ input:
     
 shell:
     '''
-    cd !{params.path}/Scripts
-    python 03_LOAD_BASH.py
+    cd "!{params.path_scripts}"
+    python "!{params.path_scripts}/03_LOAD_BASH.py" "!{params.path_scripts}"
+    
+    archivo="!{params.path_scripts}/03_data.csv"
+    if [ -f "$archivo" ]; then      
+      mv "$archivo" "!{params.path_results}/!{params.proceso}_03_data.csv"
+      echo "Archivo movido: $archivo"
+    else
+      echo "El archivo no existe: $archivo"
+    fi
+    
     '''
 
 output:
     stdout
 
 }
+
 
 
 process generaReporteTask {
@@ -102,69 +164,31 @@ input:
     
 shell:
     '''
-    cd !{params.path}/Scripts
-     R -e "rmarkdown::render('reporte_utf8.Rmd')"
-     mv reporte_utf8.pdf ../Results/reporte_$(date +'%d%m%Y_%H%M').pdf 
-    '''
-
-output:
-    stdout
-
-}
-
-
-/*
- * A trivial Perl script that produces a list of number pairs
- */
-process calculoPySparkTask_Eliminiar {
-input:
-    stdin
+    cd "!{params.path_scripts}"
     
+    R -e "rmarkdown::render('!{params.path_scripts}/reporte_utf8.Rmd', params=list(id_proceso='!{params.proceso}'))"
+              
+    archivo="!{params.path_scripts}/reporte_utf8.pdf"
+    if [ -f "$archivo" ]; then      
+        mv "!{params.path_scripts}/reporte_utf8.pdf" "!{params.path_reports}/reporte_!{params.proceso}.pdf"
+        echo "Archivo movido: $archivo"
+    else
+        echo "El archivo no existe: $archivo"
+    fi
+      
+    '''
+
 output:
     stdout
 
-    shell:
-    '''
-    #!/usr/bin/env perl
-    use strict;
-    use warnings;
-
-    my $count;
-    my $range = !{params.range};
-    for ($count = 0; $count < 10; $count++) {
-        print rand($range) . ', ' . rand($range) . "\n";
-    }
-    '''
 }
 
 
-/*
- * A Python script which parses the output of the previous script
- */
-process generacionGraficospyTask {
-    input:
-    stdin
-
-    output:
-    stdout
-
-    """
-    #!/usr/bin/env python3
-    import sys
-
-    x = 0
-    y = 0
-    lines = 0
-    for line in sys.stdin:
-        items = line.strip().split(",")
-        x += float(items[0])
-        y += float(items[1])
-        lines += 1
-
-    print("avg: %s - %s" % ( x/lines, y/lines ))
-    """
-}
 
 workflow {
-    configuracionInicialTask | descargaDataTask | calculoBashTask | calculoSQLTask | generaReporteTask | view
+    configuracionInicialTask | 
+    descargaDataTask | limpiezaDatosTask | 
+    calculoBashTask | 
+    calculoPyStackSQLTask |     
+    generaReporteTask | view
 }

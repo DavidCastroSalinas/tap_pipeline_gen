@@ -3,8 +3,10 @@
 #parametros de entrada
 archivo_referencia=$1
 archivo_secuencia=$2
+archivo_csv=$3
 varseq=""
 idRegistro=""
+echo "$1 $2  $3"
 
 # Función para obtener el tiempo en milisegundos
 get_time_ms() { 
@@ -29,16 +31,25 @@ tocr() {
   return $elapsed
 }
 
+tocconsola() {
+  end_time=$(get_time_ms) #en milisegundos
+  elapsed=$((end_time - start_time)) #lo pasamos a segundos
+  echo -n -e "$elapsed\n"
+}
+
+
+echo -n -e "ID,LONGITUD,POSICION,TIEMPO" >> $archivo_csv
 
 #extraer la secuencia o segmento de secuencia para buscarla
-while IFS= read -r line; do
-  varseq="$line"
+while IFS= read -r linea; do
+  #echo "$linea $archivo_referencia"
+  varseq="$linea"  
     if [[ $varseq == '>'* ]]; then
       tic #inicio de toma del tiempo
       ##TRAEMOS EL ID DE LA SECUENCIA
       # Usar awk para extraer el texto después del signo igual
-      idRegistro=$(echo "$varseq" | awk -F '=' '{print $2}')
-      
+      idRegistro=$(echo "$varseq" | awk -F ' ' '{print $1}')
+             
    else 
       if grep -q "$varseq" "$archivo_secuencia"; then
            
@@ -55,9 +66,12 @@ while IFS= read -r line; do
           
           longitud=$(echo "$varseq" | awk '{ print length }')
           
-          echo -n -e "$idRegistro\t$longitud\t$posicion\t$tiempo"
-          ###FIN COMPROBACION          
-          toc
+          echo -n -e "$idRegistro,$longitud,$posicion," >> $archivo_csv
+          tocconsola >> $archivo_csv
+          ###FIN COMPROBACION
+                    
+          #toc
       fi
    fi
 done < "$archivo_referencia"
+echo "finalizado"
