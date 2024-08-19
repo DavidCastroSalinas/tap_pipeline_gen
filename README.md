@@ -48,8 +48,8 @@ Las investigaciones biomédicas modernas se nutren fuertemente de herramientas c
     ```
 
 5. **Interpretación de los Resultados**:
-   - El script generará gráficos de dispersión en formato PNG que muestran la relación entre diferentes variables del set de datos.
-   - Los archivos PNG se guardarán en el mismo directorio /Results.
+   - El script generará un archivo PDF que contiene gráficos de dispersión muestran la relación entre diferentes variables del set de datos.
+   - Los archivos PDFs se guardarán en el directorio /Reports.
 
 ### Estructura de Archivos
 
