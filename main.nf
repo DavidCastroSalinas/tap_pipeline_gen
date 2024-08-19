@@ -6,6 +6,8 @@ params.path_scripts =  params.path + "/Scripts"
 params.path_results =  params.path + "/Results"
 params.path_reports =  params.path + "/Reports"
 params.path_data =     params.path + "/Data"
+params.file_refencia = "input1.fasta"
+params.file_secuencia= "input2.fasta"
 
 params.proceso = "date +%Y%m%d_%H%M%S".execute().text.trim()
 
@@ -158,6 +160,22 @@ output:
 
 
 
+process descripcionTask {
+input:
+    stdin
+    
+shell:
+    '''
+    cd "!{params.path_scripts}"
+    bash "!{params.path_scripts}/04_DESCRIPTION_BASH.sh" "!{params.path_data}/!{params.file_secuencia}" "!{params.path_results}/04_DATA_!{params.proceso}.csv"  "!{params.path_results}/04_RESUM_!{params.proceso}.csv"  
+    
+    '''
+    
+output:
+    stdout
+
+}
+
 process generaReporteTask {
 input:
     stdin
@@ -187,7 +205,9 @@ output:
 
 workflow {
     configuracionInicialTask | 
-    descargaDataTask | limpiezaDatosTask | 
+    descargaDataTask | 
+    descripcionTask |
+    limpiezaDatosTask | 
     calculoBashTask | 
     calculoPyStackSQLTask |     
     generaReporteTask | view
